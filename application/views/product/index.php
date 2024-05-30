@@ -4,7 +4,7 @@
     <div class="row">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title text-center">Liste des produits</h5>
+                <h5 class="card-title text-center">Liste des produits</h5> <a href="<?=base_url()?>product/add">Ajouter</a>
                 <table class="table table-bordered">
                     <thead>
                         <tr>
