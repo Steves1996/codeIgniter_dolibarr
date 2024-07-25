@@ -29,12 +29,49 @@ class Product extends CI_Controller
             );
             $result = $this->product_model->insertProduct($data);
             if ($result == true) {
+
                 $postParameter = array(
-                    'ref' => $ref,
-                    'label' => $name,
-                    'price' => $price,
+                    'fields' => [
+                        "name", "list_price"
+                    ],
+                    'values' => [
+                        'name' => $name,
+                        'list_price' => $price
+                    ]
                 );
-                $product_url = "http://localhost/dolitest/api/index.php/products";
+
+                //Odoo
+
+                $dataToSave = json_encode($postParameter);
+
+                $product_url = "http://localhost:8069/send_request?model=product.template";
+
+                $ch = curl_init($product_url);
+
+                //header curl
+                $headers = [
+                    "Content-Type:application/json",
+                    "db:miradb",
+                    "login:steveskamdem6@gmail.com",
+                    "password:Allen1205@",
+                    "api_key:1a874b9b-6908-4475-a5a6-a390f43306cc"
+                ];
+                //set opt
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $dataToSave);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+
+                $response = curl_exec($ch);
+
+                echo($response);
+                die();
+                
+                $this->session->set_flashdata('success', "$response");
+                redirect(base_url('product/add'));
+                curl_close($ch);
+
+                //Dolibarr
+                /*$product_url = "http://localhost/dolitest/api/index.php/products";
 
                 $ch = curl_init($product_url);
 
@@ -51,7 +88,7 @@ class Product extends CI_Controller
                     $this->session->set_flashdata('success', 'creation done !');
                     redirect(base_url('product/add'));
                 }
-                curl_close($ch);
+                curl_close($ch);*/
 
                 //process de connexion a dolibarr et recuperation du token
                 /* $loginParameter = array(
@@ -101,10 +138,46 @@ class Product extends CI_Controller
             $result = $this->product_model->updateProduct($data, $id);
             if ($result == true) {
                 $postParameter = array(
-                    'ref' => $ref,
-                    'label' => $name,
-                    'price' => $price,
+                    'fields' => [
+                        "name", "list_price"
+                    ],
+                    'values' => [
+                        'name' => $name,
+                        'list_price' => $price
+                    ]
                 );
+
+                //Odoo
+                $dataToSave = json_encode($postParameter);
+
+                $product_url = "http://localhost:8069/send_request?model=product.template&Id=$id";
+
+                $ch = curl_init($product_url);
+
+                //header curl
+                $headers = [
+                    "Content-Type:application/json",
+                    "db:miradb",
+                    "login:steveskamdem6@gmail.com",
+                    "password:Allen1205@",
+                    "api_key:1a874b9b-6908-4475-a5a6-a390f43306cc"
+                ];
+
+                //set opt
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $dataToSave);
+
+                $response = curl_exec($ch);
+
+                $this->session->set_flashdata('success', "$response");
+                redirect(base_url('product/edit/' . $id));
+
+                curl_close($ch);
+
+                //Dolibarr
+                /*
                 $product_url = "http://localhost/dolitest/api/index.php/products/$id";
                 $ch = curl_init($product_url);
 
@@ -123,6 +196,7 @@ class Product extends CI_Controller
                     redirect(base_url('product/edit/' . $id));
                 }
                 curl_close($ch);
+                */
             } else {
                 $this->session->set_flashdata('error', 'update not done !');
                 $this->load->view('product/edit_product');
@@ -137,6 +211,34 @@ class Product extends CI_Controller
         if (is_numeric($id)) {
             $result =  $this->product_model->deleteProduct($id);
             if ($result == true) {
+
+                $product_url = "http://localhost:8069/send_request?model=product.template&Id=$id";
+
+                $ch = curl_init($product_url);
+
+                
+                //header curl
+                $headers = [
+                   "Content-Type:application/json",
+                    "db:miradb",
+                    "login:steveskamdem6@gmail.com",
+                    "password:Allen1205@",
+                    "api_key:1a874b9b-6908-4475-a5a6-a390f43306cc"
+                ];
+
+                //set opt
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+
+                $response = curl_exec($ch);
+               
+                $this->session->set_flashdata('success', "$response");
+
+                redirect(base_url('product/index'));
+                curl_close($ch);
+
+                /*
                 $product_url = "http://localhost/dolitest/api/index.php/products/$id";
 
                 $ch = curl_init($product_url);
@@ -155,6 +257,7 @@ class Product extends CI_Controller
                     redirect(base_url('product/index'));
                 }
                 curl_close($ch);
+                */
             } else {
                 $this->session->set_flashdata('error', 'delete not done !');
                 $this->load->view('product/index');
@@ -162,3 +265,6 @@ class Product extends CI_Controller
         }
     }
 }
+
+
+

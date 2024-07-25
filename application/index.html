@@ -1,11 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
+
 <head>
-	<title>403 Forbidden</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Calcul de la différence entre deux dates</title>
 </head>
+
 <body>
+	<h2>Calcul de la différence entre deux dates</h2>
+	<label for="date1">Choisissez une première date :</label>
+	<input type="date" id="date1">
 
-<p>Directory access is forbidden.</p>
+	<button onclick="calculerDifference()">Calculer</button>
+	<p id="resultat"></p>
 
+	<script>
+		function calculerDifference() {
+			const date1 = new Date(document.getElementById("date1").value);
+			const date2 = new Date(date1);
+			date2.setDate(date2.getDate() + 6);
+
+
+			const timeDiff = date2.getTime() - date1.getTime();
+			const daysDiff = timeDiff / (1000 * 3600 * 24);
+
+			document.getElementById("resultat").textContent = `Deuxième date : ${date2.toDateString()} (différence de jours : ${daysDiff})`;
+		}
+	</script>
 </body>
+
 </html>
